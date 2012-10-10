@@ -1,10 +1,8 @@
 # dm-bug-report
 
-This repository is a template for creating standalone scripts which
-reproduce bugs found in DataMapper.
-
-Feel free to add/remove any dependencies from the `Gemfile`, and add your
-buggy code to `test.rb`.
+This is a clone of Postmodern's template for creating standalone scripts
+which reproduce bugs found in DataMapper.  I have modified it to support
+a spec test which exhibits a bug in DataMapper's storage of time.
 
 ## Usage
 
@@ -26,5 +24,5 @@ Install a specific DataMapper Adapter:
 
 Run the test script.
 
-    $ ./bug.rb
+    $ rspec bug.rb
 
