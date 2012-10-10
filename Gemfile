@@ -32,3 +32,5 @@ dm_gem 'dm-validations'
 #dm_gem 'dm-types'
 #dm_gem 'dm-constraints'
 #dm_gem 'dm-aggregates'
+
+gem 'rspec'

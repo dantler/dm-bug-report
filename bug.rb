@@ -25,49 +25,14 @@ require 'dm-migrations'
 #require 'dm-constraints'
 #require 'dm-aggregates'
 require 'pp'
+require 'rspec'
 
-class User
-
+class Meeting
   include DataMapper::Resource
-
   property :id, Serial
 
-  property :name, String, :required => true
-
-  has 0..n, :posts
-
-  has 0..n, :comments
-
-end
-
-class Post
-
-  include DataMapper::Resource
-
-  property :id, Serial
-
-  property :title, String, :required => true
-
-  property :body, Text
-
-  has 0..n, :comments
-
-  belongs_to :user
-
-end
-
-class Comment
-
-  include DataMapper::Resource
-
-  property :id, Serial
-
-  property :body, Text
-
-  belongs_to :post
-
-  belongs_to :user
-
+  property :begin, Time, :required => true
+  property :end,   Time, :required => true
 end
 
 DataMapper::Logger.new(STDERR,:debug) if ENV['DEBUG']
@@ -75,5 +40,48 @@ DataMapper.setup(:default, 'sqlite:bug.db')
 DataMapper.finalize.auto_migrate!
 
 # ****************************** BUGGY CODE ******************************
+describe "Meeting class" do
+
+
+  it "always returns values in server's localtime" do
+    t = Time.now.utc
+
+    t.utc?.should be_true
+
+    a = Meeting.create(:begin => t, :end => t+5)
+
+    b = Meeting.all(:begin => t, :end => t+5).first
+
+    b.begin.utc?.should be_false
+
+    a.begin.utc?.should be_true
+
+  end
+
+  it "stores the same data regardless of utc_offset value" do
+    t = Time.now.utc
+
+    t.utc?.should be_true
+    a = Meeting.create(:begin => t, :end => t+5)
+
+    t = t.getlocal("+09:00")
+    t.utc?.should be_false
+    b = Meeting.create(:begin => t, :end => t+6)
+
+    a.saved?.should be_true
+    b.saved?.should be_true
+
+    appts = Meeting.all(:begin.gte => t.utc)
+    appts.count.should == 2
+
+    appts = Meeting.all(:begin => t.utc)
+    appts.count.should == 2
+
+    appts[0].begin.should == appts[1].begin
+
+  end
+
+end
+
 
 # ****************************** BUGGY CODE ******************************
