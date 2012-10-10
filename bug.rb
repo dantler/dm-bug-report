@@ -64,9 +64,13 @@ describe "Meeting class" do
     t.utc?.should be_true
     a = Meeting.create(:begin => t, :end => t+5)
 
-    t = t.getlocal("+09:00")
-    t.utc?.should be_false
-    b = Meeting.create(:begin => t, :end => t+6)
+    t1 = t.getlocal("+09:00")
+    t1.to_i.should == t.to_i
+    t1.should == t
+    # This passes, so t1 == t
+
+    t1.utc?.should be_false
+    b = Meeting.create(:begin => t1, :end => t1+6)
 
     a.saved?.should be_true
     b.saved?.should be_true
@@ -75,6 +79,7 @@ describe "Meeting class" do
     appts.count.should == 2
 
     appts = Meeting.all(:begin => t.utc)
+    # This fails:
     appts.count.should == 2
 
     appts[0].begin.should == appts[1].begin
